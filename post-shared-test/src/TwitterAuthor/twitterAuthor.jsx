@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React from "react";
 import {
   generateRandomString,
   generateCodeChallenge,
 } from "../../utils/pkce";
 
-const CLIENT_ID = "VE9JY0x1eTh2Vlpxc1ZUeFVyanQ6MTpjaQ";
-const CLIENT_SECRET = "RntqmR8C_yFvYPnGN5PI108hsm6Lz2_K6fsfccETzbU4kV8C_P";
-const REDIRECT_URI = "https://post-shared-test.vercel.app";
+// Replace with your actual Client ID (not the base64-encoded "client_id:secret" version).
+// Typically something like: "Tk12RU9Xc2Q1M1lEexampleL53Q6MTpjaQ"
+const CLIENT_ID = "YOUR_TWITTER_CLIENT_ID"; 
+
+// This should match exactly what you put in Twitter's "Callback URLs" list.
+const REDIRECT_URI = "https://post-shared-test.vercel.app/auth/callback";
 
 const TwitterAuth = () => {
   const handleLogin = async () => {
@@ -18,21 +20,19 @@ const TwitterAuth = () => {
     // 2. Generate the code challenge
     const codeChallenge = await generateCodeChallenge(codeVerifier);
 
-    // 3. Store verifier + state so we can use them later
+    // 3. Store verifier + state so we can use them later (in your Callback page)
     sessionStorage.setItem("codeVerifier", codeVerifier);
     sessionStorage.setItem("state", state);
 
     // 4. Build the authorization URL
-    const clientId = CLIENT_ID;
-    const redirectUri = REDIRECT_URI;
-    const scope = "tweet.read users.read offline.access"; // customize scopes
+    const scope = "tweet.read users.read offline.access"; // customize scopes as needed
 
     const params = new URLSearchParams({
       response_type: "code",
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      scope: scope,
-      state: state,
+      client_id: CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      scope,
+      state,
       code_challenge: codeChallenge,
       code_challenge_method: "S256",
     });

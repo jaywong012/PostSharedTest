@@ -1,12 +1,10 @@
-// src/Callback.jsx
-
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
-function Callback() {
+const TwitterCallback = () => {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState("");
-  const [tokenResponse, setTokenResponse] = useState(null);
+  const [tokenData, setTokenData] = useState(null);
 
   useEffect(() => {
     const code = searchParams.get("code");
@@ -14,7 +12,6 @@ function Callback() {
     const storedState = sessionStorage.getItem("state");
     const codeVerifier = sessionStorage.getItem("codeVerifier");
 
-    // Basic validation
     if (!code || !returnedState) {
       setError("No code or state returned in the query params.");
       return;
@@ -24,37 +21,35 @@ function Callback() {
       return;
     }
 
-    // Exchange code for tokens
     const exchangeCodeForToken = async () => {
       try {
-        const clientId = import.meta.env.VITE_TWITTER_CLIENT_ID;
-        const redirectUri = import.meta.env.VITE_TWITTER_REDIRECT_URI;
+        // Twitter's OAuth 2.0 token endpoint
+        const url = "https://api.twitter.com/2/oauth2/token";
 
-        const bodyParams = new URLSearchParams({
+        const body = new URLSearchParams({
           grant_type: "authorization_code",
           code: code,
-          client_id: clientId,
-          redirect_uri: redirectUri,
+          client_id: "YOUR_TWITTER_CLIENT_ID", // same as used in your login step
+          redirect_uri: "https://post-shared-test.vercel.app/auth/callback",
           code_verifier: codeVerifier,
         });
 
-        // Twitter token endpoint
-        const response = await fetch("https://api.twitter.com/2/oauth2/token", {
+        const res = await fetch(url, {
           method: "POST",
           headers: {
             "Content-Type": "application/x-www-form-urlencoded",
           },
-          body: bodyParams,
+          body,
         });
 
-        if (!response.ok) {
-          throw new Error(`Token request failed: ${response.statusText}`);
+        if (!res.ok) {
+          throw new Error(`Token request failed: ${res.statusText}`);
         }
 
-        const data = await response.json();
-        setTokenResponse(data);
+        const data = await res.json();
+        setTokenData(data);
 
-        // (Optionally) Store tokens in localStorage or cookie
+        // Optionally, store the tokens in localStorage or a global state
         // localStorage.setItem("twitter_access_token", data.access_token);
 
       } catch (err) {
@@ -69,20 +64,17 @@ function Callback() {
     return <p style={{ color: "red" }}>Error: {error}</p>;
   }
 
-  if (!tokenResponse) {
+  if (!tokenData) {
     return <p>Exchanging code for token...</p>;
   }
 
   return (
     <div>
-      <h2>Callback</h2>
-      <pre>{JSON.stringify(tokenResponse, null, 2)}</pre>
-      <p>Access token: {tokenResponse.access_token}</p>
-      <p>Refresh token (if granted): {tokenResponse.refresh_token}</p>
-
-      {/* Now you can use the access token to call Twitter APIs */}
+      <h2>Callback Response</h2>
+      <pre>{JSON.stringify(tokenData, null, 2)}</pre>
+      <p>Access token: {tokenData.access_token}</p>
     </div>
   );
-}
+};
 
-export default Callback;
+export default TwitterCallback;

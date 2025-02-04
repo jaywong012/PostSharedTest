@@ -4,6 +4,7 @@ import App from './App.jsx';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Callback from './Callback.jsx';
 import React from 'react';
+import TwitterCallback from './Callback.jsx';
 
 const router = createBrowserRouter([
   {
@@ -12,7 +13,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth/callback",
-    element: <Callback />,
+    element: <TwitterCallback />,
   },
 ]);
 
