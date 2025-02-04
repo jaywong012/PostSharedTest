@@ -23,8 +23,8 @@ const TwitterAuth = () => {
     sessionStorage.setItem("state", state);
 
     // 4. Build the authorization URL
-    const clientId = import.meta.env.VITE_TWITTER_CLIENT_ID;
-    const redirectUri = import.meta.env.VITE_TWITTER_REDIRECT_URI;
+    const clientId = CLIENT_ID;
+    const redirectUri = REDIRECT_URI;
     const scope = "tweet.read users.read offline.access"; // customize scopes
 
     const params = new URLSearchParams({
